@@ -16,9 +16,9 @@ const Home = () => {
   const adjustPlaneforScreeSize = () => {
     let screenScale, screenPosition;
     if (window.innerwidth < 768) {
-      screenScale = [1.5, 1.5, 1.5];
+      screenScale = [0.05, 0.05, 0.05];
     } else {
-      screenScale = [3, 3, 3];
+      screenScale = [0.02, 0.02, 0.02];
     }
     return screenScale;
   };
@@ -37,6 +37,8 @@ const Home = () => {
   };
   const [islandScale, islandPosition, islandRotation] =
     adjustIslandforScreenSize();
+
+  const [planeScale] = adjustPlaneforScreeSize();
 
   return (
     <section
@@ -61,13 +63,13 @@ const Home = () => {
           <Bird />
           <Sky />
           <Island
+            isRotating={isRotating}
+            setisRotating={setisRotating}
             scale={islandScale}
             position={islandPosition}
             rotation={islandRotation}
-            isRotating={isRotating}
-            setisRotating={setisRotating}
           />
-          <Plane />
+          <Plane isRotating={isRotating} scale={planeScale} />
         </Suspense>
       </Canvas>
     </section>

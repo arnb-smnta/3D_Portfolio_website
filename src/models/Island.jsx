@@ -12,9 +12,77 @@ import { useFrame, useThree } from "@react-three/fiber";
 import islandScene from "../assets/3d/island.glb";
 import { a } from "@react-spring/three";
 
-const Island = (props) => {
+const Island = ({ isRotating, setisRotating, ...props }) => {
   const islandref = useRef();
+  //access to 3js rendere and viewport
+  const { gl, viewport } = useThree();
+  const lastX = useRef(0); //last horizontal position
+  const rotationSpeed = useRef(0);
+  const dampingFactor = 0.95; //This is the factor that asses  how fast the rotation spped of island when clicked
+
   const { nodes, materials } = useGLTF(islandScene);
+
+  const handlePointerDown = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setisRotating(true);
+    //This function figures out it is a touch event on phone or a clicki event on a computer
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX; //e.touches figures out a touch event
+    lastX.current = clientX;
+  };
+  const handlePointerUp = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setisRotating(false);
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const delta = (clientX - lastX.current) / viewport.width; //calculate the change in horizontal position
+    islandref.current.rotation.y += delta * 0.01 * Math.PI; //update the ISLAND rotation based on the delta
+    lastX.current = clientX; //update the reference for last client X position
+    rotationSpeed.current = delta * 0.01 * Math.PI; //update the rotation speed
+  };
+  const handlePointerMove = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (isRotating) {
+      handlePointerUp(e);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "ArrowLeft") {
+      if (!isRotating) setisRotating(true);
+
+      islandref.current.rotation.y += 0.005 * Math.PI;
+      rotationSpeed.current = 0.007;
+    } else if (e.key === "AroowRight") {
+      if (!isRotating) setisRotating(true);
+      islandref.current.rotation.y -= 0.005 * Math.PI;
+      rotationSpeed.current = -0.007;
+    }
+  };
+
+  const handleKeyUp = (e) => {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") setisRotating(false);
+  };
+
+  useEffect(() => {
+    // Add event listeners for pointer and keyboard events
+    const canvas = gl.domElement;
+    canvas.addEventListener("pointerdown", handlePointerDown);
+    canvas.addEventListener("pointerup", handlePointerUp);
+    canvas.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    // Remove event listeners when component unmounts
+    return () => {
+      canvas.removeEventListener("pointerdown", handlePointerDown);
+      canvas.removeEventListener("pointerup", handlePointerUp);
+      canvas.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [gl, handlePointerDown, handlePointerMove, handlePointerUp]);
   return (
     <a.group {...props} ref={islandref}>
       <mesh
