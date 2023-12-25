@@ -3,24 +3,25 @@ import emailjs from "@emailjs/browser";
 import { Canvas } from "@react-three/fiber";
 import Fox from "./models/Fox";
 import { Loader } from "@react-three/drei";
+import Dragon from "./models/Dragon";
 const Contact = () => {
-  const [currentanimation, setcurrentanimation] = useState("idle");
+  const [currentanimation, setcurrentanimation] = useState("Idle");
   const formRef = useRef(null);
   const [form, setform] = useState({ name: "", email: "", message: "" });
   const handleChange = (e) => {
     setform({ ...form, [e.target.name]: e.target.value });
   };
   const handleFocus = () => {
-    setcurrentanimation("walk");
+    setcurrentanimation("Skill 1");
   };
   const handleblur = () => {
-    setcurrentanimation("idle");
+    setcurrentanimation("Idle");
   };
   const [isLoading, setisLoading] = useState(false);
   const handleSubmit = (e) => {
     e.preventDefault();
     setisLoading(true);
-    setcurrentanimation("hit");
+    setcurrentanimation("Skill 2");
     emailjs
       .send(
         import.meta.env.VITE_APP_serviceID,
@@ -38,13 +39,13 @@ const Contact = () => {
         setisLoading(false);
         setform({ name: "", email: "", message: "" });
         setTimeout(() => {
-          setcurrentanimation("idle");
-        }, [3000]);
+          setcurrentanimation("Idle");
+        }, [3200]);
       })
       .catch((e) => {
         console.log(e);
         setisLoading(false);
-        setcurrentanimation("idle");
+        setcurrentanimation("Idle");
       });
   };
   return (
@@ -129,13 +130,20 @@ const Contact = () => {
             penumbra={1}
             intensity={2}
           />
-          <Suspense fallback={<Loader />}>
-            <Fox
+          <Suspense fallback={<Suspense />}>
+            <Dragon
               currentanimations={currentanimation}
+              scale={[1.5, 1.5, 1.5]}
               position={[0.5, 0.35, 0]}
               rotation={[12.629, -0.6, 0]}
-              scale={[0.5, 0.5, 0.5]}
-            ></Fox>
+            />
+            {/*
+              <Fox
+                currentanimations={currentanimation}
+                position={[0.5, 0.35, 0]}
+                rotation={[12.629, -0.6, 0]}
+                scale={[0.5, 0.5, 0.5]}
+              ></Fox>*/}
           </Suspense>
         </Canvas>
       </div>
