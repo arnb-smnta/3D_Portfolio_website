@@ -15,3 +15,27 @@ A growing collection of use helpers and fully fuctional ready made abstractions
 sketchfab -For free beautiful 3d models
 
 GLB viewing website by three js to convert it into jsx - gltf.pmnd.rs
+
+flying_skeletal.3
+:
+undefined
+idle_skeletal.3
+:
+undefined
+running_skeletal.3
+:
+undefined
+get flying_skeletal.3
+:
+ƒ get()
+get idle_skeletal.3
+:
+ƒ get()
+get running_skeletal.3
+:
+ƒ get()
+[[Prototype]]
+:
+Object
+
+email js is the package for enabling email communication

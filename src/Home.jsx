@@ -5,6 +5,7 @@ import Island from "./models/Island";
 import Sky from "./models/Sky";
 import Bird from "./models/Bird";
 import Plane from "./models/Plane";
+import Homeinfo from "./pages/Homeinfo";
 {
   /*<div className="absolute top-28 left-0 right-0 z-10 flex items-center justify-center">
         Popup
@@ -12,15 +13,18 @@ import Plane from "./models/Plane";
 }
 const Home = () => {
   const [isRotating, setisRotating] = useState(false);
+  const [currentStage, setCurrentStage] = useState(1);
 
   const adjustPlaneforScreeSize = () => {
     let screenScale, screenPosition;
     if (window.innerwidth < 768) {
       screenScale = [0.05, 0.05, 0.05];
+      screenPosition = [0, -1.5, 0];
     } else {
       screenScale = [0.02, 0.02, 0.02];
+      screenPosition = [0, -1.5, 0];
     }
-    return screenScale;
+    return [screenScale, screenPosition];
   };
 
   const adjustIslandforScreenSize = () => {
@@ -38,7 +42,7 @@ const Home = () => {
   const [islandScale, islandPosition, islandRotation] =
     adjustIslandforScreenSize();
 
-  const [planeScale] = adjustPlaneforScreeSize();
+  const [planeScale, planeposition] = adjustPlaneforScreeSize();
 
   return (
     <section
@@ -46,6 +50,9 @@ const Home = () => {
         isRotating ? "cursor-grabbing" : "cursor-grab"
       }`}
     >
+      <div className="absolute top-28 left-0 right-0 z-10 flex items-center justify-center">
+        {currentStage && <Homeinfo currentStage={currentStage} />}
+      </div>
       <Canvas
         className="w-full h-screen relative"
         camera={{ near: 0.1, far: 1000 }}
@@ -60,16 +67,21 @@ const Home = () => {
             groundColor="#00000"
             intensity={1}
           />
-          <Bird />
-          <Sky />
+          <Bird rotation={[0, 20.1, 0]} />
+          <Sky isRotating={isRotating} />
           <Island
             isRotating={isRotating}
             setisRotating={setisRotating}
             scale={islandScale}
             position={islandPosition}
             rotation={islandRotation}
+            setCurrentStage={setCurrentStage}
           />
-          <Plane isRotating={isRotating} scale={planeScale} />
+          <Plane
+            isRotating={isRotating}
+            scale={planeScale}
+            position={planeposition}
+          />
         </Suspense>
       </Canvas>
     </section>
