@@ -1,17 +1,26 @@
-import React, { useRef, useState } from "react";
+import React, { Suspense, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
+import { Canvas } from "@react-three/fiber";
+import Fox from "./models/Fox";
+import { Loader } from "@react-three/drei";
 const Contact = () => {
+  const [currentanimation, setcurrentanimation] = useState("idle");
   const formRef = useRef(null);
   const [form, setform] = useState({ name: "", email: "", message: "" });
   const handleChange = (e) => {
     setform({ ...form, [e.target.name]: e.target.value });
   };
-  const handleFocus = () => {};
-  const handleblur = () => {};
+  const handleFocus = () => {
+    setcurrentanimation("walk");
+  };
+  const handleblur = () => {
+    setcurrentanimation("idle");
+  };
   const [isLoading, setisLoading] = useState(false);
   const handleSubmit = (e) => {
     e.preventDefault();
     setisLoading(true);
+    setcurrentanimation("hit");
     emailjs
       .send(
         import.meta.env.VITE_APP_serviceID,
@@ -27,10 +36,15 @@ const Contact = () => {
       )
       .then(() => {
         setisLoading(false);
+        setform({ name: "", email: "", message: "" });
+        setTimeout(() => {
+          setcurrentanimation("idle");
+        }, [3000]);
       })
       .catch((e) => {
         console.log(e);
         setisLoading(false);
+        setcurrentanimation("idle");
       });
   };
   return (
@@ -40,6 +54,7 @@ const Contact = () => {
         <form
           className="w-full flex flex-col gap-7 mt-14"
           onSubmit={handleSubmit}
+          ref={formRef}
         >
           <label className="text-black-500 font-semibold">
             Name
@@ -94,6 +109,35 @@ const Contact = () => {
             {isLoading ? "sending ...." : "send message"}
           </button>
         </form>
+      </div>
+
+      <div className="lg:w-1/2 w-full lg:h-auto md:h-[550px] h-[350px]">
+        <Canvas
+          camera={{
+            position: [0, 0, 5],
+            fov: 75,
+            near: 0.1,
+            far: 1000,
+          }}
+        >
+          <directionalLight position={[0, 0, 1]} intensity={2.5} />
+          <ambientLight intensity={1} />
+          <pointLight position={[5, 10, 0]} intensity={2} />
+          <spotLight
+            position={[10, 10, 10]}
+            angle={0.15}
+            penumbra={1}
+            intensity={2}
+          />
+          <Suspense fallback={<Loader />}>
+            <Fox
+              currentanimations={currentanimation}
+              position={[0.5, 0.35, 0]}
+              rotation={[12.629, -0.6, 0]}
+              scale={[0.5, 0.5, 0.5]}
+            ></Fox>
+          </Suspense>
+        </Canvas>
       </div>
     </section>
   );
