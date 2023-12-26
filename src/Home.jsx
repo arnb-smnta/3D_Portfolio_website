@@ -6,6 +6,7 @@ import Sky from "./models/Sky";
 import Bird from "./models/Bird";
 import Plane from "./models/Plane";
 import Homeinfo from "./pages/Homeinfo";
+import Flying_Dragon from "./models/Flying_Dragon";
 {
   /*<div className="absolute top-28 left-0 right-0 z-10 flex items-center justify-center">
         Popup
@@ -67,7 +68,8 @@ const Home = () => {
             groundColor="#00000"
             intensity={1}
           />
-          <Bird rotation={[0, 20.1, 0]} />
+          {<Bird rotation={[0, 20.1, 0]} />}
+          {/* <Flying_Dragon />*/}
           <Sky isRotating={isRotating} />
           <Island
             isRotating={isRotating}
